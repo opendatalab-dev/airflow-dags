@@ -13,6 +13,9 @@ default_args = {
     'retries': 0
 }
 
+def print_hello():
+    return 'Hello world from first Airflow DAG!'
+
 SLACK_CONN_ID = 'slack_test_dag_alerts'
 def task_fail_slack_alert(context):
     slack_webhook_token = BaseHook.get_connection(SLACK_CONN_ID).password
@@ -66,7 +69,9 @@ start_date=datetime(2021,1,1),
 schedule_interval="@once", 
 catchup=False)
 
-start = DummyOperator(task_id='start', dag=dag)
-end = DummyOperator(task_id='end', dag=dag)
+start = PythonOperator(
+    task_id='hello_task', 
+    python_callable=print_hello, 
+    dag=dag)
 
-start >> end
+start
